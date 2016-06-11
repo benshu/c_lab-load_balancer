@@ -49,25 +49,24 @@ def send_response(socket, response_code):
     total_sent = 0
     while total_sent < MSG_LEN:
         sent = socket.send(response[total_sent:])
-        if sent==0:
+        if sent == 0:
             print "Error sending response"
         total_sent += sent
 
 
 def listen_for_request(s):
-    data=s.recv(BUFFER_SIZE)
+    data = s.recv(BUFFER_SIZE)
     while True:
         data += s.recv(BUFFER_SIZE)
         if END_OF_HTTP in data:
-            result=handle_request(data)
+            result = handle_request(data)
             send_response(s, result)
-            data=re.sub('.*' + END_OF_HTTP, '', data)
-
+            data = re.sub('.*' + END_OF_HTTP, '', data)
 
 
 def connect_to_lb(remote_port):
     try:
-        s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((HOST, remote_port))
         listen_for_request(s)
     except Exception as e:
@@ -83,7 +82,7 @@ def main():
         print('Usage: %s <Remote load balancer port>' % sys.argv[0])
         sys.exit(1)
     assert sys.argv[1].isdigit()
-    port=int(sys.argv[1], 10)
+    port = int(sys.argv[1], 10)
     connect_to_lb(port)
 
 if __name__ == "__main__":
