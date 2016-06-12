@@ -4,16 +4,11 @@ import re
 
 HOST = '127.0.0.1'
 BUFFER_SIZE = 1024
-END_OF_HTTP = '\n\n'
+END_OF_HTTP = '\r\n\r\n'
 ERROR_CODE = 404
 OK_CODE = 200
-ERROR_RESPONSE = '''HTTP/1.1 404 Not Found
-Content-type: text/html
-Content-length: 135
-
-<html><head><title>Not Found</title></head><body>
-Sorry, the object you requested was not found.
-</body><html>'''
+ERROR_RESPONSE = '''HTTP/1.1 404 Not Found\r\nContent-type: text/html\r\nContent-length: 135\r\n\r\n<html><head><title>Not Found</title></head><body>
+Sorry, the object you requested was not found.\r\n</body><html>\r\n\r\n'''
 counter = 0
 
 
@@ -30,6 +25,7 @@ def parse_uri_from_request(request):
 def handle_request(request):
     global counter
     uri = parse_uri_from_request(request)
+    print "URI is: " + uri
     if uri == '/counter':
         counter += 1
         return OK_CODE
@@ -44,6 +40,7 @@ def send_response(socket, response_code):
     else:
         response = ERROR_RESPONSE
 
+    print "Sending response to LB: " + response
     MSG_LEN = len(response)
 
     total_sent = 0
@@ -55,19 +52,25 @@ def send_response(socket, response_code):
 
 
 def listen_for_request(s):
-    data = s.recv(BUFFER_SIZE)
+    data = ''
     while True:
         data += s.recv(BUFFER_SIZE)
         if END_OF_HTTP in data:
+            print "Found double newline in data"
             result = handle_request(data)
             send_response(s, result)
-            data = re.sub('.*' + END_OF_HTTP, '', data)
+            data = re.sub('.*' + END_OF_HTTP, '', data, flags = re.DOTALL)
+            print "Data should be empty: " + data
+            print "END :", END_OF_HTTP
+        else:
+            print "no double newline in data"
 
 
 def connect_to_lb(remote_port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((HOST, remote_port))
+        print "Connected to LB"
         listen_for_request(s)
     except Exception as e:
         print "Error, couldn't open socket", e
