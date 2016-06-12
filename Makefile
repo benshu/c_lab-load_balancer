@@ -5,7 +5,7 @@ OBJ = ex3_lb.o
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-lb: $(OBJ)
+ex3_lb: $(OBJ)
 	gcc -o $@ $^ $(CFLAGS)
 
 clean:
