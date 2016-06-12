@@ -67,7 +67,8 @@ void init_sockets(int *servers_fd, int* client_fd){
 
 void accept_servers_connections(int socket_fd, int *server_handles)
 {
-    for (int i = 0; i < NUM_SERVERS; i++) {
+	int i=0;
+    for (i = 0; i < NUM_SERVERS; i++) {
         printf("Waiting for connection\n");
         server_handles[i] = accept(socket_fd , NULL, NULL);
         printf("server connected\n");
@@ -90,8 +91,6 @@ char *recieve_to_double_newline(int connection)
 
 int send_string_to_socket(char *string, int connection)
 {
-    char *buffer;
-    buffer = calloc(BUF_SIZE, sizeof(char));
     int msg_len = strlen(string), sent = 0;
     while (sent < msg_len) {
 
