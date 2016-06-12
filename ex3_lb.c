@@ -87,9 +87,9 @@ char *recieve_http(int connection, bool is_response)
         bytes_recieved += recv(connection, buffer + bytes_recieved, BUF_SIZE - 1, 0);
         /*printf("Data: %s\n", buffer);*/
         if (is_response) 
-            done = strnstr(strnstr(buffer, DOUBLE_NEWLINE, BUF_SIZE), DOUBLE_NEWLINE, BUF_SIZE) != NULL ; 
+            done = strstr(strstr(buffer, DOUBLE_NEWLINE), DOUBLE_NEWLINE) != NULL ; 
         else
-            done = strnstr(buffer, DOUBLE_NEWLINE, BUF_SIZE) != NULL; 
+            done = strstr(buffer, DOUBLE_NEWLINE) != NULL; 
         
     } while(!done);
 
@@ -125,12 +125,12 @@ void handle_clients(int client_fd, int *server_handles)
             current_server =0;
         else current_server++;
 
-        int res = send_string_to_socket(request, server_handles[current_server]);
+        send_string_to_socket(request, server_handles[current_server]);
         /*printf("Wrote %d bytes to server %d\n", res, current_server);*/
 
         response = recieve_http(server_handles[current_server], true);
 
-        res = send_string_to_socket(response, client_handle);
+        send_string_to_socket(response, client_handle);
          /*printf("Wrote %d bytes to client\n", res);*/
 
         free(request);
