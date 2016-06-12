@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 
 #define LISTEN_BACKLOG 50
-#define NUM_SERVERS 1
+#define NUM_SERVERS 3
 #define BUF_SIZE 1024
 #define SERVER_PORT_FILENAME "server_port"
 #define HTTP_PORT_FILENAME "http_port"
