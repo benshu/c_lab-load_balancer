@@ -1,13 +1,5 @@
 #! /usr/bin/env bash
 
-~nimrodav/socket_ex/verify_readme.sh
-
-ls -la | grep ' \.$' | grep -v "drwxrwxrwx"
-ls -la | grep -v '\.$' | grep -v "rwxr-xr-x" | grep -v "total "
-
-~nimrodav/grep_tests/check_line_lengths.sh
-python2.7 ~nimrodav/grep_tests/check_private_functions.py ./ex3_lb
-
 ./ex3_lb &
 disown
 sleep 0.1
@@ -19,17 +11,17 @@ disown
 ./ex3_server `cat server_port` &
 disown
 
-python2.7 ~nimrodav/socket_ex/run_test.py `cat http_port` | diff ~nimrodav/socket_ex/1 -
-python2.7 ~nimrodav/socket_ex/run_test.py `cat http_port` | diff ~nimrodav/socket_ex/1 -
-python2.7 ~nimrodav/socket_ex/run_test.py `cat http_port` | diff ~nimrodav/socket_ex/1 -
+python run_test.py `cat http_port` | diff 1 -
+python run_test.py `cat http_port` | diff 1 -
+python run_test.py `cat http_port` | diff 1 -
 
-python2.7 ~nimrodav/socket_ex/run_test.py `cat http_port` | diff ~nimrodav/socket_ex/2 -
-python2.7 ~nimrodav/socket_ex/run_test.py `cat http_port` | diff ~nimrodav/socket_ex/2 -
-python2.7 ~nimrodav/socket_ex/run_test.py `cat http_port` | diff ~nimrodav/socket_ex/2 -
+python run_test.py `cat http_port` | diff 2 -
+python run_test.py `cat http_port` | diff 2 -
+python run_test.py `cat http_port` | diff 2 -
 
-python2.7 ~nimrodav/socket_ex/run_test.py `cat http_port` | diff ~nimrodav/socket_ex/3 -
-python2.7 ~nimrodav/socket_ex/run_test.py `cat http_port` | diff ~nimrodav/socket_ex/3 -
-python2.7 ~nimrodav/socket_ex/run_test.py `cat http_port` | diff ~nimrodav/socket_ex/3 -
+python run_test.py `cat http_port` | diff 3 -
+python run_test.py `cat http_port` | diff 3 -
+python run_test.py `cat http_port` | diff 3 -
 
 rm server_port
 rm http_port

@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <netinet/in.h>
+#include <stdbool.h>
 
 #define LISTEN_BACKLOG 50
 #define NUM_SERVERS 3
@@ -51,12 +52,12 @@ void init_sockets(int *servers_fd, int* client_fd){
     int  server_port = 0, http_port =0;
 
     server_port = create_and_bind_socket(servers_fd);
-    printf("Servers port: %d\n", server_port);
+    /*printf("Servers port: %d\n", server_port);*/
     write_num_to_file(server_port, SERVER_PORT_FILENAME);
 
     http_port = create_and_bind_socket(client_fd);
     write_num_to_file(http_port, HTTP_PORT_FILENAME);
-    printf("http port: %d\n", http_port);
+    /*printf("http port: %d\n", http_port);*/
 
     if(listen(*servers_fd, LISTEN_BACKLOG) < 0 )
         printf("Error on listen() to servers");
@@ -69,22 +70,30 @@ void accept_servers_connections(int socket_fd, int *server_handles)
 {
 	int i=0;
     for (i = 0; i < NUM_SERVERS; i++) {
-        printf("Waiting for connection\n");
+        /*printf("Waiting for connection\n");*/
         server_handles[i] = accept(socket_fd , NULL, NULL);
-        printf("server connected\n");
+        /*printf("server connected\n");*/
     }
 }
 
-char *recieve_to_double_newline(int connection)
+char *recieve_http(int connection, bool is_response)
 {
+    int bytes_recieved =0;
     char *buffer;
+    bool done = false;
     buffer = calloc(BUF_SIZE, sizeof(char));
-    // TODO - support long requests
     do {
-        printf("Recieving from client\n");
-        recv(connection, buffer, BUF_SIZE, 0);
-        printf("Data: %s\n", buffer);
-    } while(strstr(buffer, DOUBLE_NEWLINE));
+        /*printf("Recieving from client\n");*/
+        bytes_recieved += recv(connection, buffer + bytes_recieved, BUF_SIZE - 1, 0);
+        /*printf("Data: %s\n", buffer);*/
+        if (is_response) 
+            done = strnstr(strnstr(buffer, DOUBLE_NEWLINE, BUF_SIZE), DOUBLE_NEWLINE, BUF_SIZE) != NULL ; 
+        else
+            done = strnstr(buffer, DOUBLE_NEWLINE, BUF_SIZE) != NULL; 
+        
+    } while(!done);
+
+    buffer[bytes_recieved] = '\0';
 
     return buffer;
 }
@@ -102,22 +111,27 @@ void handle_clients(int client_fd, int *server_handles)
 {
     int client_handle =0;
     char *request = NULL, *response = NULL;
+    int current_server = 0;
 
     while (1) {
-        printf("Waiting for client\n");
+        /*printf("Waiting for client\n");*/
         client_handle = accept(client_fd , NULL, NULL);
-        printf("Client connected\n");
+        /*printf("Client connected\n");*/
 
-        request = recieve_to_double_newline(client_handle);
-        printf("Recieved: %s", request);
+        request = recieve_http(client_handle, false);
+        /*printf("Recieved: %s", request);*/
 
-        int res = send_string_to_socket(request, server_handles[0]);
-        printf("Wrote %d bytes to server\n", res);
+        if (current_server == (NUM_SERVERS -1))
+            current_server =0;
+        else current_server++;
 
-        response = recieve_to_double_newline(server_handles[0]);
+        int res = send_string_to_socket(request, server_handles[current_server]);
+        /*printf("Wrote %d bytes to server %d\n", res, current_server);*/
+
+        response = recieve_http(server_handles[current_server], true);
 
         res = send_string_to_socket(response, client_handle);
-        printf("Wrote %d bytes to client\n", res);
+         /*printf("Wrote %d bytes to client\n", res);*/
 
         free(request);
         free(response);

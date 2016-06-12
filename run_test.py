@@ -16,7 +16,7 @@ Accept-Encoding: gzip,deflate,sdch\r
 Accept-Language: en-US,en;q=0.8,he;q=0.6\r\n\r\n"""
 
 s = socket()
-s.connect(('nova.cs.tau.ac.il', port))
+s.connect(('127.0.0.1', port))
 first_part_len = random.randint(0, len(request))
 s.send(request[:first_part_len])
 time.sleep(0.1)
