@@ -59,7 +59,7 @@ def listen_for_request(s):
             # print "Found double newline in data"
             result = handle_request(data)
             send_response(s, result)
-            data = re.sub('.*' + END_OF_HTTP, '', data, flags = re.DOTALL)
+            data = re.sub('.*' + END_OF_HTTP, '', data, flags=re.DOTALL)
             # print "Data should be empty: " + data
             # print "END :", END_OF_HTTP
         # else:

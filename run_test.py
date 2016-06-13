@@ -6,7 +6,7 @@ import time
 port = int(sys.argv[1])
 
 request = \
-"""GET /counter HTTP/1.1\r
+    """GET /counter HTTP/1.1\r
 Host: nova.cs.tau.ac.il\r
 Connection: keep-alive\r
 Cache-Control: max-age=0\r
@@ -23,7 +23,7 @@ time.sleep(0.1)
 s.send(request[first_part_len:])
 
 response = ''
-while 1:
+while True:
     response += s.recv(1024)
     if response.count('\r\n\r\n') == 2:
         break
