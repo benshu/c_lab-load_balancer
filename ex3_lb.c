@@ -70,14 +70,16 @@ void accept_servers_connections(int socket_fd, int *server_handles) {
 }
 
 char *recieve_http(int connection, bool is_response) {
-  int bytes_recieved = 0;
+  int bytes_recieved = 0, current_buffer_size = BUF_SIZE;
   char *buffer;
   bool done = false;
 
-  buffer = calloc(BUF_SIZE, sizeof(char));
+  buffer = calloc(current_buffer_size, sizeof(char));
   do {
+	if (bytes_recieved >= current_buffer_size - 1)
+		buffer = realloc(buffer, current_buffer_size + BUF_SIZE);
     bytes_recieved +=
-        recv(connection, buffer + bytes_recieved, BUF_SIZE - 1, 0);
+        recv(connection, buffer + bytes_recieved, current_buffer_size - bytes_recieved - 1, 0);
     if (is_response)
       done = strstr(strstr(buffer, DOUBLE_NEWLINE), DOUBLE_NEWLINE) != NULL;
     else

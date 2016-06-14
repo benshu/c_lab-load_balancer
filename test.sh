@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 
-./ex3_lb &
+valgrind --leak-check=yes ./ex3_lb &
 disown
-sleep 0.1
+sleep 5
 
 ./ex3_server `cat server_port` &
 disown
