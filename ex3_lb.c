@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <time.h>
 
 #define LISTEN_BACKLOG 50
 #define NUM_SERVERS 3
@@ -123,6 +124,7 @@ int main() {
   int servers_fd = 0, client_fd = 0;
   int server_handles[NUM_SERVERS];
 
+  srandom(time(NULL));
   init_sockets(&servers_fd, &client_fd);
   accept_servers_connections(servers_fd, server_handles);
   handle_clients(client_fd, server_handles);
