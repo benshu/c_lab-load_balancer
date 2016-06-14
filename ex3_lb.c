@@ -5,8 +5,8 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <time.h>
+#include <unistd.h>
 
 #define LISTEN_BACKLOG 50
 #define NUM_SERVERS 3
