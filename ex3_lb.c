@@ -93,7 +93,7 @@ int send_string_to_socket(char *string, int connection) {
   int msg_len = strlen(string), bytes_sent = 0;
 
   while (bytes_sent < msg_len) {
-    bytes_sent += write(connection, string, strlen(string));
+    bytes_sent += write(connection, string, msg_len);
   }
   return bytes_sent;
 }
